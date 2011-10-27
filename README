@@ -1,0 +1,20 @@
+This is a simple function for managing virtualenvs. It is similar to
+virtualenvwrapper but with fewer features. Use it to activate, deactivate,
+and switch virtualenvs. Currently there are two hooks provided: post-activate
+and post-deactivate.
+
+p.sh is meant to be sourced and not run directly
+
+requires:
+    PYENV to be set to your base dir for virtualenvs
+
+provides:
+    p
+
+INSTALL:
+    put into ~/.bashrc or the like:
+        export PYENV=~/my_virtual_envs
+        source /path/to/p.sh
+
+USAGE:
+    p --help
