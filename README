@@ -1,14 +1,16 @@
-This is a simple function for managing virtualenvs. It is similar to
-virtualenvwrapper but with fewer features. Use it to activate, deactivate,
-and switch virtualenvs. Currently there are two hooks provided: post-activate
-and post-deactivate.
+SYNOPSIS:
+    This is a simple function for managing virtualenvs. It is similar to
+    virtualenvwrapper but with fewer features. Use it to activate, deactivate,
+    and switch virtualenvs. Currently there are two hooks provided:
+    post-activate and post-deactivate.
 
-p.sh is meant to be sourced and not run directly
+    p.sh is meant to be sourced and not run directly.
 
-requires:
+REQUIRES:
+    bash
     PYENV to be set to your base dir for virtualenvs
 
-provides:
+PROVIDES:
     p
 
 INSTALL:
@@ -18,3 +20,7 @@ INSTALL:
 
 USAGE:
     p --help
+    p -d  - deactivate current virtualenv
+    p ENV - switch to ENV, running the post-deactivate hook for any current
+            virtualenv, and running the post-activate hook for ENV. Tab
+            completion is supported.

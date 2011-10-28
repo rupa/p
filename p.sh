@@ -10,11 +10,11 @@ p() {
         elif [ "$1" == "--help" ]; then
             cat << EOF
 simple virtualenv management for bash
-p            - list virtualenvs
-p -h         - short help
-p --help     - long help
-p -d         - deactivate current virtualenv and run post-deactivate hook
-p virtualenv - deactivate current virtualenv and activate new one with hooks
+p        - list virtualenvs
+p -h     - short help
+p --help - long help
+p -d     - deactivate current virtualenv and run post-deactivate hook
+p ENV    - deactivate current virtualenv and activate ENV with hooks
 hooks:
     bin/post-activate   - sourced after the virtualenv is activated
     bin/post-deactivate - sourced after the virtualenv is deactivated
