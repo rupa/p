@@ -32,7 +32,7 @@ EOF
             # deactivate current virtualenv and run post-deactivate hook
             [ "$VIRTUAL_ENV" ] && {
                 local CURR_ENV="$(basename $VIRTUAL_ENV)"
-                deactivate
+                deactivate 2>/dev/null
                 source "$PYENV/$CURR_ENV/bin/post-deactivate" 2>/dev/null
             }
         }
