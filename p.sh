@@ -8,7 +8,9 @@ p() {
             echo "p [-h][--help][-d][virtualenv][.][..]"
             return
         elif [ "$1" == "." -a "$VIRTUAL_ENV" ]; then
-            cd $VIRTUAL_ENV/lib/*/site-packages
+            local site_packages=$($VIRTUAL_ENV/bin/python -c \
+            "import distutils;print(distutils.sysconfig.get_python_lib())")
+            [ "$site_packages" ] && cd $site_packages
             return
         elif [ "$1" == ".." -a "$VIRTUAL_ENV" ]; then
             cd $VIRTUAL_ENV
