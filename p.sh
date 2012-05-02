@@ -5,7 +5,13 @@ p() {
     }
     if [ "$1" ]; then
         if [ "$1" == "-h" ]; then
-            echo "p [-h][--help][-d][virtualenv]"
+            echo "p [-h][--help][-d][virtualenv][.][..]"
+            return
+        elif [ "$1" == "." -a "$VIRTUAL_ENV" ]; then
+            cd $VIRTUAL_ENV/lib/*/site-packages
+            return
+        elif [ "$1" == ".." -a "$VIRTUAL_ENV" ]; then
+            cd $VIRTUAL_ENV
             return
         elif [ "$1" == "--help" ]; then
             cat << EOF
@@ -20,7 +26,7 @@ hooks:
     bin/post-deactivate - sourced after the virtualenv is deactivated
 EOF
         fi
-        [ "$1" == "-d" -o -d "$PYENV/$1" ] && {
+        [ "$1" == "-d" -o -f "$PYENV/$1/bin/activate" ] && {
             # deactivate current virtualenv and run post-deactivate hook
             [ "$VIRTUAL_ENV" ] && {
                 local CURR_ENV="$(basename $VIRTUAL_ENV)"
@@ -28,7 +34,7 @@ EOF
                 source "$PYENV/$CURR_ENV/bin/post-deactivate" 2>/dev/null
             }
         }
-        [ -d "$PYENV/$1" ] && {
+        [ -f "$PYENV/$1/bin/activate" ] && {
             # activate new virtualenv and run post-activate hook
             source "$PYENV/$1/bin/activate"
             source "$PYENV/$1/bin/post-activate" 2>/dev/null
