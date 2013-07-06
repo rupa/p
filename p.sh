@@ -41,6 +41,6 @@ EOF
 # tab completion
 _p() {
     cur="${COMP_WORDS[COMP_CWORD]}"
-    COMPREPLY=( $( compgen -W '$( command ls "$PYENV" )' -- "$cur" ) )
+    COMPREPLY=( $(compgen -W '$(command ls "$PYENV")' -- "$cur") )
 }
 complete -F _p p
