@@ -1,0 +1,139 @@
+#!/usr/bin/env bash
+
+# create virtualenvs from scratch
+
+BASE="$HOME/.python"
+# pythons go here
+PY_PREFIX="$BASE/pythons"
+# virtualenvs go here
+VENV_PREFIX="$BASE/venvs"
+
+usage() {
+cat <<EOF
+usage: $(basename $0) [-3] [virtualenv_name]
+        pythons: $PY_PREFIX
+    virtualenvs: $VENV_PREFIX
+EOF
+}
+
+case $1 in
+    -h|--help) usage; exit;;
+    -3) # Python 3.3.2
+        shift
+        PY_VERSION=3.3.2
+        PY_URL=http://www.python.org/ftp/python/3.3.2
+        PY_FILE=Python-3.3.2.tgz
+        PY_MD5=0a2ea57f6184baf45b150aee53c0c8da
+        PY_SRC=Python-3.3.2
+        PY_EXE=python3.3
+        ;;
+     *) # Python 2.7.5
+        PY_VERSION=2.7.5
+        PY_URL=http://www.python.org/ftp/python/2.7.5
+        PY_FILE=Python-2.7.5.tgz
+        PY_MD5=b4f01a1d0ba0b46b05c73b2ac909b1df
+        PY_SRC=Python-2.7.5
+        PY_EXE=python2.7
+        ;;
+esac
+
+# virtualenv
+
+VENV_URL=https://raw.github.com/pypa/virtualenv/master
+VENV_FILE=virtualenv.py
+VENV_MD5=3c152e15898578db937d5253d1478b39
+
+# virtualenv needs local versions of setuptools and pip to use
+
+SETUPTOOLS_URL=https://pypi.python.org/packages/2.7/s/setuptools
+SETUPTOOLS_FILE=setuptools-0.6c11-py2.7.egg
+SETUPTOOLS_MD5=fe1f997bc722265116870bc7919059ea
+
+PIP_URL=https://pypi.python.org/packages/source/p/pip
+PIP_FILE=pip-1.3.1.tar.gz
+PIP_MD5=cbb27a191cebc58997c4da8513863153
+
+check_md5() {
+    case $(uname) in
+        Darwin) md5=$(md5 -q "$1");;
+        Linux) md5=$(md5sum "$1");;
+    esac
+    [ "${md5%% *}" = "$2" ] && return
+    echo "$1 md5 doesn't match"
+    return 1
+}
+
+ensure_python() {
+
+    mkdir -p "$PY_PREFIX"
+    cd "$BASE"
+    [ "$PWD" = "$BASE" ] || {
+        echo "Can't find $BASE"
+        return 1
+    }
+
+    [ -f "$PY_FILE" ] || wget "$PY_URL/$PY_FILE"
+    [ -d "$PY_SRC" ] || tar xvf "$PY_FILE"
+
+    check_md5 "$PY_FILE" "$PY_MD5" || return 1
+
+    [ -f "$PY_PREFIX/$PY_VERSION/bin/$PY_EXE" ] || {
+        cd "$PY_SRC"
+        [ "$PWD" = "$BASE/$PY_SRC" ] || {
+            echo "Can't find $BASE/$PY_SRC"
+            return 1
+        }
+
+        case $(uname) in
+            Darwin)
+                # without this >=10.6 it won't try to build readline module
+                FLAGS="MACOSX_DEPLOYMENT_TARGET=10.8"
+            ;;
+        esac
+
+        ./configure $FLAGS --prefix="$PY_PREFIX/$PY_VERSION"
+        make
+
+        read -p "Continue with install? [y/N] " REPLY
+        [ "$REPLY" = "y" -o "$REPLY" = "Y" ] || return 1
+
+        make altinstall
+    }
+}
+
+make_virtualenv() {
+
+    [ -f "$PY_PREFIX/$PY_VERSION/bin/$PY_EXE" ] || {
+        echo "Cant' find $PY_PREFIX/$PY_VERSION/bin/$PY_EXE"
+        return 1
+    }
+
+    local support=virtualenv_support
+
+    mkdir -p "$VENV_PREFIX"
+    cd "$BASE"
+    [ "$PWD" = "$BASE" ] || {
+        echo "Can't find $BASE"
+        return 1
+    }
+
+    [ -f "$VENV_FILE" ] || wget "$VENV_URL/$VENV_FILE"
+    [ -d "$support" ] || {
+        mkdir -p $support
+        cd $support
+        [ -f "$SETUPTOOLS_FILE" ] || wget "$SETUPTOOLS_URL/$SETUPTOOLS_FILE"
+        [ -f "$PIP_FILE" ] || wget "$PIP_URL/$PIP_FILE"
+        cd -
+    }
+
+    check_md5 "$VENV_FILE" "$VENV_MD5" || return 1
+    check_md5 "$support/$SETUPTOOLS_FILE" "$SETUPTOOLS_MD5" || return 1
+    check_md5 "$support/$PIP_FILE" "$PIP_MD5" || return 1
+
+    [ "$1" ] || return
+
+    "$PY_PREFIX/$PY_VERSION/bin/$PY_EXE" ./"$VENV_FILE" "$VENV_PREFIX/$1"
+}
+
+ensure_python || exit
+make_virtualenv "$1"

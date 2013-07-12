@@ -1,25 +1,42 @@
 SYNOPSIS:
-    This is a simple function for managing virtualenvs. It is similar to
+    A couple of python/virtualenv utilities.
+
+    p is a simple function for managing virtualenvs. It is similar to
     virtualenvwrapper but with fewer features. Use it to activate, deactivate,
     and switch virtualenvs.
 
-    Currently there are two hooks provided:
-         post-activate and post-deactivate.
+    Currently there are two (shell) hooks provided:
+        * post-activate
+        * post-deactivate.
     These should be files placed in the bin directory of your virtualenv
 
     p.sh is meant to be sourced and not run directly.
 
+    pystrap is a utility for fine grained control over python and virtualenv,
+    or for use with old or awful unixes without nice repositories. It:
+        * downloads and compiles python from source
+        * installs python in your user directory
+        * downloads virtualenv and dependencies
+        * creates virtualenvs using these
+
+    It only requires bash, and everything is kept in ~/.python.
+
 REQUIRES:
     bash
-    PYENV to be set to your base dir for virtualenvs
+    p requires PYENV to be set to your base dir for virtualenvs
 
 PROVIDES:
     p
+    pystrap
 
 INSTALL:
-    put into ~/.bashrc or the like:
-        export PYENV=~/my_virtual_envs
-        source /path/to/p.sh
+    p:
+        put into ~/.bashrc or the like:
+            export PYENV=~/my_virtual_envs
+            source /path/to/p.sh
+
+    pytstrap:
+        put it somewhere in $PATH
 
 USAGE:
     p --help
@@ -29,3 +46,9 @@ USAGE:
             completion is supported.
     p .   - cd to site-packages
     p ..  - cd to virtualenv root
+
+    pystrap -h --help
+    pystrap        - install python2 and virtualenv
+    pystrap ENV    - create virtualenv ENV with python2
+    pystrap -3     - install python3 and virtualenv
+    pystrap -3 ENV - create virtualenv ENV with python3
