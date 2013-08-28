@@ -94,6 +94,7 @@ ensure_python() {
         ./configure $FLAGS --prefix="$PY_PREFIX/$PY_VERSION"
         make
 
+        # So you can review if all the 'necessary bits' are compiled
         read -p "Continue with install? [y/N] " REPLY
         [ "$REPLY" = "y" -o "$REPLY" = "Y" ] || return 1
 
