@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
 
-# create virtualenvs from scratch
+# create virtualenvs from scratch with a compiled python
+
+# to make sure all the 'necessary bits' of python get compiled,
+# on debianlike distros (tested ubuntu 13.04), you should probably:
+#     * make sure deb-src repos are enabled
+#     * aptitude build-dep [2.7/3.3]
+# for some reason, it doesn't seem to pull in curses:
+#     * aptitude install libncurses-dev
 
 BASE="$HOME/.python"
 # pythons go here
@@ -23,7 +30,7 @@ case $1 in
         PY_VERSION=3.3.2
         PY_URL=http://www.python.org/ftp/python/3.3.2
         PY_FILE=Python-3.3.2.tgz
-        PY_MD5=0a2ea57f6184baf45b150aee53c0c8da
+        PY_TGZ_MD5=0a2ea57f6184baf45b150aee53c0c8da
         PY_SRC=Python-3.3.2
         PY_EXE=python3.3
         ;;
@@ -31,27 +38,18 @@ case $1 in
         PY_VERSION=2.7.5
         PY_URL=http://www.python.org/ftp/python/2.7.5
         PY_FILE=Python-2.7.5.tgz
-        PY_MD5=b4f01a1d0ba0b46b05c73b2ac909b1df
+        PY_TGZ_MD5=b4f01a1d0ba0b46b05c73b2ac909b1df
         PY_SRC=Python-2.7.5
         PY_EXE=python2.7
         ;;
 esac
 
 # virtualenv
-
-VENV_URL=https://raw.github.com/pypa/virtualenv/master
-VENV_FILE=virtualenv.py
-VENV_MD5=3c152e15898578db937d5253d1478b39
-
-# virtualenv needs local versions of setuptools and pip to use
-
-SETUPTOOLS_URL=https://pypi.python.org/packages/2.7/s/setuptools
-SETUPTOOLS_FILE=setuptools-0.6c11-py2.7.egg
-SETUPTOOLS_MD5=fe1f997bc722265116870bc7919059ea
-
-PIP_URL=https://pypi.python.org/packages/source/p/pip
-PIP_FILE=pip-1.3.1.tar.gz
-PIP_MD5=cbb27a191cebc58997c4da8513863153
+VENV_URL=https://pypi.python.org/packages/source/v/virtualenv
+VENV_FILE=virtualenv-1.10.tar.gz
+VENV_TGZ_MD5=9745c28256c70c76d36adb3767a00212
+VENV_SRC=virtualenv-1.10
+VENV_EXE=virtualenv.py
 
 check_md5() {
     case $(uname) in
@@ -75,7 +73,7 @@ ensure_python() {
     [ -f "$PY_FILE" ] || wget "$PY_URL/$PY_FILE"
     [ -d "$PY_SRC" ] || tar xvf "$PY_FILE"
 
-    check_md5 "$PY_FILE" "$PY_MD5" || return 1
+    check_md5 "$PY_FILE" "$PY_TGZ_MD5" || return 1
 
     [ -f "$PY_PREFIX/$PY_VERSION/bin/$PY_EXE" ] || {
         cd "$PY_SRC"
@@ -109,31 +107,21 @@ make_virtualenv() {
         return 1
     }
 
-    local support=virtualenv_support
-
-    mkdir -p "$VENV_PREFIX"
     cd "$BASE"
     [ "$PWD" = "$BASE" ] || {
         echo "Can't find $BASE"
         return 1
     }
 
-    [ -f "$VENV_FILE" ] || wget "$VENV_URL/$VENV_FILE"
-    [ -d "$support" ] || {
-        mkdir -p $support
-        cd $support
-        [ -f "$SETUPTOOLS_FILE" ] || wget "$SETUPTOOLS_URL/$SETUPTOOLS_FILE"
-        [ -f "$PIP_FILE" ] || wget "$PIP_URL/$PIP_FILE"
-        cd -
-    }
-
-    check_md5 "$VENV_FILE" "$VENV_MD5" || return 1
-    check_md5 "$support/$SETUPTOOLS_FILE" "$SETUPTOOLS_MD5" || return 1
-    check_md5 "$support/$PIP_FILE" "$PIP_MD5" || return 1
+    [ -f "$VENV_FILE" ] || curl -O "$VENV_URL/$VENV_FILE"
+    check_md5 "$VENV_FILE" "$VENV_TGZ_MD5" || return 1
+    [ -d "$VENV_SRC" ] || tar xvfz "$VENV_FILE"
 
     [ "$1" ] || return
 
-    "$PY_PREFIX/$PY_VERSION/bin/$PY_EXE" ./"$VENV_FILE" "$VENV_PREFIX/$1"
+    [ -d "$VENV_PREFIX" ] || mkdir -p "$VENV_PREFIX"
+
+    "$PY_PREFIX/$PY_VERSION/bin/$PY_EXE" "$VENV_SRC/$VENV_EXE" "$VENV_PREFIX/$1"
 }
 
 ensure_python || exit
