@@ -100,7 +100,7 @@ ensure_python() {
     }
 }
 
-make_virtualenv() {
+ensure_virtualenv() {
 
     [ -f "$PY_PREFIX/$PY_VERSION/bin/$PY_EXE" ] || {
         echo "Cant' find $PY_PREFIX/$PY_VERSION/bin/$PY_EXE"
@@ -121,8 +121,10 @@ make_virtualenv() {
 
     [ -d "$VENV_PREFIX" ] || mkdir -p "$VENV_PREFIX"
 
+    [ -d "$VENV_PREFIX/$1" ] && return
+
     "$PY_PREFIX/$PY_VERSION/bin/$PY_EXE" "$VENV_SRC/$VENV_EXE" "$VENV_PREFIX/$1"
 }
 
 ensure_python || exit
-make_virtualenv "$1"
+ensure_virtualenv "$1"
