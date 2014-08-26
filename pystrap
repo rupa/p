@@ -82,10 +82,13 @@ ensure_python() {
             return 1
         }
 
+        # take a wide stance
+        FLAGS='--enable-unicode=ucs4'
+
         case $(uname) in
             Darwin)
                 # without this >=10.6 it won't try to build readline module
-                FLAGS="MACOSX_DEPLOYMENT_TARGET=10.8"
+                FLAGS="$FLAGS MACOSX_DEPLOYMENT_TARGET=10.8"
             ;;
         esac
 
