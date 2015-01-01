@@ -40,10 +40,11 @@ INSTALL:
 
 USAGE:
     p --help
-    p -d  - deactivate current virtualenv
     p ENV - switch to ENV, running the post-deactivate hook for any current
             virtualenv, and running the post-activate hook for ENV. Tab
             completion is supported.
+    p -d  - deactivate current virtualenv
+    p -a  - revert -d
     p .   - cd to site-packages
     p ..  - cd to virtualenv root
 

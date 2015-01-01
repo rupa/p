@@ -5,7 +5,23 @@ p() {
     }
     if [ "$1" ]; then
         if [ "$1" == "-h" ]; then
-            echo "p [-h][--help][-d][virtualenv][.][..]"
+            echo "p [-h][--help][-d][-a][.][..][virtualenv]"
+            return
+        elif [ "$1" == "--help" ]; then
+            cat << EOF
+simple virtualenv management for bash
+p        - list virtualenvs
+p -h     - short help
+p --help - long help
+p -d     - deactivate current virtualenv and run post-deactivate hook
+p -a     - revert -d
+p .      - cd to site-packages of current virtualenv
+p ..     - cd to root of current virtualenv
+p ENV    - deactivate current virtualenv and activate ENV with hooks
+hooks:
+    bin/post-activate   - sourced after the virtualenv is activated
+    bin/post-deactivate - sourced after the virtualenv is deactivated
+EOF
             return
         elif [ "$1" == "." -a "$VIRTUAL_ENV" ]; then
             local site_packages=$($VIRTUAL_ENV/bin/python -c \
@@ -15,25 +31,25 @@ p() {
         elif [ "$1" == ".." -a "$VIRTUAL_ENV" ]; then
             cd $VIRTUAL_ENV
             return
-        elif [ "$1" == "--help" ]; then
-            cat << EOF
-simple virtualenv management for bash
-p        - list virtualenvs
-p -h     - short help
-p --help - long help
-p -d     - deactivate current virtualenv and run post-deactivate hook
-p ENV    - deactivate current virtualenv and activate ENV with hooks
-hooks:
-    bin/post-activate   - sourced after the virtualenv is activated
-    bin/post-deactivate - sourced after the virtualenv is deactivated
-EOF
+        elif [ "$1" = "-a" ]; then
+            [ "$VIRTUAL_ENV" ] && {
+                echo "Already in virtualenv $(basename $VIRTUAL_ENV)"
+                return
+            }
+            [ "$OLD_VIRTUAL_ENV" ] || {
+                echo '$OLD_VIRTUAL_ENV not set'
+                return
+            }
+            source "$PYENV/$OLD_VIRTUAL_ENV/bin/activate"
+            source "$PYENV/$OLD_VIRTUAL_ENV/bin/post-activate" 2>/dev/null
+            return
         fi
         [ "$1" == "-d" -o -f "$PYENV/$1/bin/activate" ] && {
             # deactivate current virtualenv and run post-deactivate hook
             [ "$VIRTUAL_ENV" ] && {
-                local CURR_ENV="$(basename $VIRTUAL_ENV)"
+                OLD_VIRTUAL_ENV="$(basename $VIRTUAL_ENV)"
                 deactivate 2>/dev/null
-                source "$PYENV/$CURR_ENV/bin/post-deactivate" 2>/dev/null
+                source "$PYENV/$OLD_VIRTUAL_ENV/bin/post-deactivate" 2>/dev/null
             }
         }
         [ -f "$PYENV/$1/bin/activate" ] && {
