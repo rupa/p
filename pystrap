@@ -25,31 +25,52 @@ EOF
 
 case $1 in
     -h|--help) usage; exit;;
-    -3) # Python 3.3.2
+    -3.3.2) # Python 3.3.2
         shift
         PY_VERSION=3.3.2
         PY_URL=http://www.python.org/ftp/python/3.3.2
-        PY_FILE=Python-3.3.2.tgz
+        PY_TGZ=Python-3.3.2.tgz
         PY_TGZ_MD5=0a2ea57f6184baf45b150aee53c0c8da
         PY_SRC=Python-3.3.2
         PY_EXE=python3.3
         ;;
-     *) # Python 2.7.5
+    -3) # latest
+        shift
+        PY_VERSION=3.4.1
+        PY_URL=https://www.python.org/ftp/python/3.4.1
+        PY_TGZ=Python-3.4.1.tgz
+        PY_TGZ_MD5=26695450087f8587b26d0b6a63844af5
+        PY_SRC=Python-3.4.1
+        PY_EXE=python3.4
+        ;;
+    -2.7.5) # Python 2.7.5
+        shift
         PY_VERSION=2.7.5
         PY_URL=http://www.python.org/ftp/python/2.7.5
-        PY_FILE=Python-2.7.5.tgz
+        PY_TGZ=Python-2.7.5.tgz
         PY_TGZ_MD5=b4f01a1d0ba0b46b05c73b2ac909b1df
         PY_SRC=Python-2.7.5
+        PY_EXE=python2.7
+        ;;
+     *) # latest
+        PY_VERSION=2.7.8
+        PY_URL=https://www.python.org/ftp/python/2.7.8
+        PY_TGZ_MD5=d4bca0159acb0b44a781292b5231936f
+        PY_TGZ=Python-2.7.8.tgz
+        PY_SRC=Python-2.7.8
         PY_EXE=python2.7
         ;;
 esac
 
 # virtualenv
 VENV_URL=https://pypi.python.org/packages/source/v/virtualenv
-VENV_FILE=virtualenv-1.10.tar.gz
-VENV_TGZ_MD5=9745c28256c70c76d36adb3767a00212
-VENV_SRC=virtualenv-1.10
 VENV_EXE=virtualenv.py
+#VENV_FILE=virtualenv-1.10.tar.gz
+#VENV_TGZ_MD5=9745c28256c70c76d36adb3767a00212
+#VENV_SRC=virtualenv-1.10
+VENV_TGZ=virtualenv-12.0.4.tar.gz
+VENV_TGZ_MD5=ce7c4025516806b791bbd5b4ff6c4b84
+VENV_SRC=virtualenv-12.0.4
 
 check_md5() {
     case $(uname) in
