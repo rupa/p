@@ -91,10 +91,10 @@ ensure_python() {
         return 1
     }
 
-    [ -f "$PY_FILE" ] || wget "$PY_URL/$PY_FILE"
-    [ -d "$PY_SRC" ] || tar xvf "$PY_FILE"
+    [ -f "$PY_TGZ" ] || wget "$PY_URL/$PY_TGZ"
+    [ -d "$PY_SRC" ] || tar xvf "$PY_TGZ"
 
-    check_md5 "$PY_FILE" "$PY_TGZ_MD5" || return 1
+    check_md5 "$PY_TGZ" "$PY_TGZ_MD5" || return 1
 
     [ -f "$PY_PREFIX/$PY_VERSION/bin/$PY_EXE" ] || {
         cd "$PY_SRC"
@@ -137,9 +137,9 @@ ensure_virtualenv() {
         return 1
     }
 
-    [ -f "$VENV_FILE" ] || curl -O "$VENV_URL/$VENV_FILE"
-    check_md5 "$VENV_FILE" "$VENV_TGZ_MD5" || return 1
-    [ -d "$VENV_SRC" ] || tar xvfz "$VENV_FILE"
+    [ -f "$VENV_TGZ" ] || curl -O "$VENV_URL/$VENV_TGZ"
+    check_md5 "$VENV_TGZ" "$VENV_TGZ_MD5" || return 1
+    [ -d "$VENV_SRC" ] || tar xvfz "$VENV_TGZ"
 
     [ "$1" ] || return
 
