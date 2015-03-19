@@ -5,19 +5,20 @@ p() {
     }
     if [ "$1" ]; then
         if [ "$1" == "-h" ]; then
-            echo "p [-h][--help][-d][-a][.][..][virtualenv]"
+            echo "p [-h][--help][-d][-a][-m MODULE][.][..][ENV]"
             return
         elif [ "$1" == "--help" ]; then
             cat << EOF
 simple virtualenv management for bash
-p        - list virtualenvs
-p -h     - short help
-p --help - long help
-p -d     - deactivate current virtualenv and run post-deactivate hook
-p -a     - revert -d
-p .      - cd to site-packages of current virtualenv
-p ..     - cd to root of current virtualenv
-p ENV    - deactivate current virtualenv and activate ENV with hooks
+p           - list virtualenvs
+p -h        - short help
+p --help    - long help
+p -d        - deactivate current virtualenv and run post-deactivate hook
+p -a        - revert -d
+p -m MODULE - cd to directory where module lives
+p .         - cd to site-packages of current virtualenv
+p ..        - cd to root of current virtualenv
+p ENV       - deactivate current virtualenv and activate ENV with hooks
 hooks:
     bin/post-activate   - sourced after the virtualenv is activated
     bin/post-deactivate - sourced after the virtualenv is deactivated
@@ -31,6 +32,25 @@ EOF
         elif [ "$1" == ".." -a "$VIRTUAL_ENV" ]; then
             cd $VIRTUAL_ENV
             return
+        elif [ "$1" = "-m" ]; then
+            shift
+            [ "$1" ] || return
+pth=$(
+python <<EOF
+import os.path
+try:
+    import $1
+except ImportError:
+    pass
+else:
+    try:
+        print os.path.dirname(os.path.realpath($1.__file__[:-1]))
+    except AttributeError:
+        pass
+EOF
+)
+            [ "$pth" ] || return
+            cd "$pth"
         elif [ "$1" = "-a" ]; then
             [ "$VIRTUAL_ENV" ] && {
                 echo "Already in virtualenv $(basename $VIRTUAL_ENV)"

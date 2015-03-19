@@ -18,8 +18,13 @@ SYNOPSIS:
         * installs python in your user directory
         * downloads virtualenv and dependencies
         * creates virtualenvs using these
-
-    It only requires bash, and everything is kept in ~/.python.
+    You'll need some dev files to get all the modules built:
+        * debian
+            * aptitude build-dep python2.7
+        * OSX
+            * make sure xcode command line tools are installed, this gets
+              most of the modules built.
+    Everything is kept in ~/.python.
 
 REQUIRES:
     bash
@@ -39,14 +44,15 @@ INSTALL:
         put it somewhere in $PATH
 
 USAGE:
-    p --help
-    p ENV - switch to ENV, running the post-deactivate hook for any current
-            virtualenv, and running the post-activate hook for ENV. Tab
-            completion is supported.
-    p -d  - deactivate current virtualenv
-    p -a  - revert -d
-    p .   - cd to site-packages
-    p ..  - cd to virtualenv root
+    p           - list virtualenvs
+    p -h        - short help
+    p --help    - long help
+    p -d        - deactivate current virtualenv and run post-deactivate hook
+    p -a        - revert -d
+    p -m MODULE - cd to directory where module lives
+    p .         - cd to site-packages of current virtualenv
+    p ..        - cd to root of current virtualenv
+    p ENV       - deactivate current virtualenv and activate ENV with hooks
 
     pystrap -h --help
     pystrap        - install python2 and virtualenv
