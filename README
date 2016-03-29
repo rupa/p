@@ -40,8 +40,9 @@ INSTALL:
             export PYENV=~/my_virtual_envs
             source /path/to/p.sh
 
-    pytstrap:
+    pystrap:
         put it somewhere in $PATH
+        read comments at top of script, you'll need deps installed to build.
 
 USAGE:
     p           - list virtualenvs
