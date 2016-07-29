@@ -61,6 +61,15 @@ case $1 in
         PY_SRC=Python-2.7.8
         PY_EXE=python2.7
         ;;
+     -2.7.9)
+        shift
+        PY_VERSION=2.7.9
+        PY_URL=https://www.python.org/ftp/python/2.7.9
+        PY_TGZ_MD5=5eebcaa0030dc4061156d3429657fb83
+        PY_TGZ=Python-2.7.9.tgz
+        PY_SRC=Python-2.7.9
+        PY_EXE=python2.7
+        ;;
      *) # latest
         shift
         PY_VERSION=2.7.11
@@ -75,6 +84,19 @@ esac
 # virtualenv
 VENV_URL=https://pypi.python.org/packages/source/v/virtualenv
 VENV_EXE=virtualenv.py
+
+#VENV_FILE=virtualenv-1.10.tar.gz
+#VENV_TGZ_MD5=9745c28256c70c76d36adb3767a00212
+#VENV_SRC=virtualenv-1.10
+
+#VENV_TGZ=virtualenv-12.0.4.tar.gz
+#VENV_TGZ_MD5=ce7c4025516806b791bbd5b4ff6c4b84
+#VENV_SRC=virtualenv-12.0.4
+
+#VENV_TGZ=virtualenv-12.1.1.tar.gz
+#VENV_TGZ_MD5=901ecbf302f5de9fdb31d843290b7217
+#VENV_SRC=virtualenv-12.1.1
+
 VENV_TGZ=virtualenv-15.0.1.tar.gz
 VENV_TGZ_MD5=28d76a0d9cbd5dc42046dd14e76a6ecc
 VENV_SRC=virtualenv-15.0.1
@@ -153,6 +175,11 @@ ensure_virtualenv() {
     [ -d "$VENV_PREFIX/$1" ] && return
 
     "$PY_PREFIX/$PY_VERSION/bin/$PY_EXE" "$VENV_SRC/$VENV_EXE" "$VENV_PREFIX/$1"
+}
+
+[ "$VIRTUAL_ENV" ] && {
+    echo "probably not a good idea to run this in a virtualenv"
+    exit
 }
 
 ensure_python || exit
